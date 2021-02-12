@@ -55,7 +55,7 @@ function CreatePortfolio(data, userid) {
         coverage: data.coverage,
         org: data.org,
         publish: data.publish,
-        data: '<?xml version="1.0" encoding="UTF-8"?><portfolio id="' + data.portfolioid + '" description="' + data.description + '" coverage="' + data.coverage + '" org="' + data.org + '" publish="' + data.publish + '"><audits></audits></portfolio>'
+        data: data.data
     };
     return new Promise(function(resolve, reject){
         database.InsertData(Portfolio).then(function(Result){
