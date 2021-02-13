@@ -4,19 +4,20 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
+const https = require('https');
+var fs = require("fs");
 
 // defining configuration settings
 const config = require('../env/config.js');
 
 const portfolio = require('./portfolio.js');
 
+//oauth libraries import
+const jwt = require('express-jwt');
+const jwksRsa = require('jwks-rsa');
+
 // defining the Express app
 const app = express();
-
-// defining an array to work as the database (temporary solution)
-const ads = [
-    {title: 'Hello, world (again)!'}
-];
 
 // adding Helmet to enhance your API's security
 app.use(helmet());
@@ -44,12 +45,22 @@ app.get('/GetData/:id', (req, res) => {
     });
 });
 
-// endpoint to delete a portfolio
-app.delete('/DeleteData/:id', (req, res) => {
-    portfolio.DeletePortfolio(req.params.id).then(function(Result){
-        res.send(Result);
-    });
+//uses for oauth authentication: free plan on https://auth0.com/
+const checkJwt = jwt({
+    secret: jwksRsa.expressJwtSecret({
+        cache: true,
+        rateLimit: true,
+        jwksRequestsPerMinute: 5,
+        jwksUri: 'https://dev-0paifw0y.eu.auth0.com/.well-known/jwks.json'
+    }),
+
+    // Validate the audience and the issuer.
+    audience: 'https://ads-api',
+    issuer: 'https://dev-0paifw0y.eu.auth0.com/',
+    algorithms: ['RS256']
 });
+
+app.use(checkJwt);
 
 // endpoint to update a portfolio
 app.post('/AddData', async (req, res) => {
@@ -60,7 +71,22 @@ app.post('/AddData', async (req, res) => {
     });
 });
 
-// starting the server
-app.listen(config.port, () => {
-    console.log('listening on port ' + config.port);
+// endpoint to delete a portfolio
+app.delete('/DeleteData/:id', (req, res) => {
+    portfolio.DeletePortfolio(req.params.id).then(function(Result){
+        res.send(Result);
+    });
 });
+
+// starting the server
+//pass app to https server
+https.createServer({
+    key: fs.readFileSync('./key.pem'),
+    cert: fs.readFileSync('./cert.pem'),
+    passphrase: 'aitam'
+},app).listen(config.port);
+
+
+// app.listen(config.port, () => {
+//     console.log('listening on port ' + config.port);
+// });
