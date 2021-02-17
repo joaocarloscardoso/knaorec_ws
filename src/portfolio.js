@@ -47,6 +47,10 @@ function DeletePortfolio(portfolioref) {
 };
 
 function CreatePortfolio(data, userid) {
+    //if exists acts as an update (delete first, add next)
+    var dbparams = {userid: userid,
+        portfolioid: data.portfolioid
+    }
     var Portfolio = {
         userid: userid,
         datepub: (new Date()).toJSON(),
@@ -58,7 +62,7 @@ function CreatePortfolio(data, userid) {
         data: data.data
     };
     return new Promise(function(resolve, reject){
-        database.InsertData(Portfolio).then(function(Result){
+        database.InsertData(dbparams, Portfolio).then(function(Result){
             resolve(Result);
         });
     });

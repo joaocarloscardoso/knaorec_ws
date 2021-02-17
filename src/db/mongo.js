@@ -5,17 +5,21 @@ var MongoClient = require('mongodb').MongoClient;
 var ObjectID = require('mongodb').ObjectID;
 var urlDB = env.mongoDB.urlDB;
 
-function InsertData(data){
+function InsertData(myquery, data){
+    //if exists acts as an update (delete first, add next)
     return new Promise(function(resolve, reject){
         MongoClient.connect(urlDB, { useUnifiedTopology: true }, function(err, db) {
             if (err) throw err;
             var dbo = db.db(env.mongoDB.dbportfolio);
             //var myquery = { answer: "no" };
-            dbo.collection(env.mongoDB.colportfolio).insertOne(data, function(err, res) {
+            dbo.collection(env.mongoDB.colportfolio).deleteMany(myquery, function(err, obj) {
                 if (err) throw err;
-                console.log("Document inserted");
-                resolve(res.insertedId);
-                db.close();
+                dbo.collection(env.mongoDB.colportfolio).insertOne(data, function(err, res) {
+                    if (err) throw err;
+                    console.log("Document inserted");
+                    resolve(res.insertedId);
+                    db.close();
+                });
             });
         });
     });
