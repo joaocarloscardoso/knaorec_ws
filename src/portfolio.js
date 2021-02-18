@@ -48,6 +48,7 @@ function DeletePortfolio(portfolioref) {
 
 function CreatePortfolio(data, userid) {
     //if exists acts as an update (delete first, add next)
+    //else acts as an insert
     var dbparams = {userid: userid,
         portfolioid: data.portfolioid
     }

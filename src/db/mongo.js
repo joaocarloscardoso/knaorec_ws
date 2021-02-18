@@ -7,6 +7,7 @@ var urlDB = env.mongoDB.urlDB;
 
 function InsertData(myquery, data){
     //if exists acts as an update (delete first, add next)
+    //else acts as an insert
     return new Promise(function(resolve, reject){
         MongoClient.connect(urlDB, { useUnifiedTopology: true }, function(err, db) {
             if (err) throw err;
