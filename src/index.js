@@ -4,7 +4,10 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
-const https = require('https');
+//uncomment in production
+//const https = require('https');
+//comment in production
+const https = require('http');
 var fs = require("fs");
 
 // defining configuration settings
@@ -16,6 +19,7 @@ const portfolio = require('./portfolio.js');
 const jwt = require('express-jwt');
 const jwksRsa = require('jwks-rsa');
 
+
 // defining the Express app
 const app = express();
 
@@ -23,7 +27,14 @@ const app = express();
 app.use(helmet());
 
 // using bodyParser to parse JSON bodies into JS objects
-app.use(bodyParser.json());
+//app.use(bodyParser.json());
+
+app.use(bodyParser.json({limit: '50mb', extended: true}));
+app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
+
+app.use(express.json({limit: '50mb', extended: true}));
+app.use(express.urlencoded({limit: '50mb', extended: true}));
+
 
 // enabling CORS for all requests
 app.use(cors());
@@ -81,9 +92,10 @@ app.delete('/DeleteData/:id', (req, res) => {
 // starting the server
 //pass app to https server
 https.createServer({
-    key: fs.readFileSync('./key.pem'),
-    cert: fs.readFileSync('./cert.pem'),
-    passphrase: 'aitam'
+    //uncomment in production
+    // key: fs.readFileSync('./key.pem'),
+    // cert: fs.readFileSync('./cert.pem'),
+    // passphrase: 'aitam'
 },app).listen(config.port);
 
 
