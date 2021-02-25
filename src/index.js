@@ -76,7 +76,6 @@ app.use(checkJwt);
 // endpoint to update a portfolio
 app.post('/AddData', async (req, res) => {
     const NewPortfolio = req.body;
-    console.log(NewPortfolio);
     portfolio.CreatePortfolio(NewPortfolio, config.userid).then(function(Result){
         res.send(Result);
     });

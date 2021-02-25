@@ -9,6 +9,7 @@ module.exports = {
         password:'',
         dbportfolio: 'aitam',
         colportfolio: 'recommendations',
+        colsearch: 'recsearch',
         colaudits: 'audits'
     },
 };

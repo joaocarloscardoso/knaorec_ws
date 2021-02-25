@@ -59,6 +59,40 @@ function DeleteData(myquery){
     });
 };
 
+function DeleteSearchData(myquery){
+    return new Promise(function(resolve, reject){
+        MongoClient.connect(urlDB, { useUnifiedTopology: true }, function(err, db) {
+            if (err) throw err;
+            var dbo = db.db(env.mongoDB.dbportfolio);
+            //var myquery = { requestid: RequestID };
+            dbo.collection(env.mongoDB.colsearch).deleteMany(myquery, function(err, obj) {
+                if (err) throw err;
+                //console.log(obj.result.n + " search document(s) deleted");
+                resolve(obj.result.n + " search document(s) deleted");
+                db.close();
+            });
+        });
+    });
+};
+
+function InsertSearchData(data){
+    //if exists acts as an update (delete first, add next)
+    //else acts as an insert
+    return new Promise(function(resolve, reject){
+        MongoClient.connect(urlDB, { useUnifiedTopology: true }, function(err, db) {
+            if (err) throw err;
+            var dbo = db.db(env.mongoDB.dbportfolio);
+            //var myquery = { answer: "no" };
+            dbo.collection(env.mongoDB.colsearch).insertOne(data, function(err, res) {
+                if (err) throw err;
+                //console.log("Search Document inserted");
+                resolve(res.insertedId);
+                db.close();
+            });
+        });
+    });
+};
+
 function QueryData(myquery, myfields, sortfields){
     return new Promise(function(resolve, reject){
         MongoClient.connect(urlDB, { useUnifiedTopology: true }, function(err, db) {
@@ -78,4 +112,6 @@ module.exports.InsertData = InsertData;
 module.exports.UpdateData = UpdateData;
 module.exports.DeleteData = DeleteData;
 module.exports.QueryData = QueryData;
+module.exports.DeleteSearchData = DeleteSearchData;
+module.exports.InsertSearchData = InsertSearchData;
 

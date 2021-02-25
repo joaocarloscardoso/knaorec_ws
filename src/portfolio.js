@@ -41,6 +41,8 @@ function DeletePortfolio(portfolioref) {
 
     return new Promise(function(resolve, reject){
         database.DeleteData(dbparams).then(function(Result){
+            database.DeleteSearchData(dbparams).then(function(Resultdel){
+            });
             resolve(Result);
         });
     });
@@ -64,6 +66,30 @@ function CreatePortfolio(data, userid) {
     };
     return new Promise(function(resolve, reject){
         database.InsertData(dbparams, Portfolio).then(function(Result){
+            //delete on recsearch
+            database.DeleteSearchData(dbparams).then(function(Resultdel){
+                var doc = new Dom().parseFromString(data.data);
+                var vAudits = xpath.select("/portfolio/audits/Audit/About/@id",doc);
+                for (var i=0; i<vAudits.length; i++) {
+                    var vRecommendations = xpath.select("/portfolio/audits/Audit/About[@id='" + vAudits[i].nodeValue + "']/../Recommendations/Recommendation/@nr",doc);
+                    for (var j=0; j<vRecommendations.length; j++) {
+                        //insert on recsearch
+                        //var datadb = new XMLSerializer().serializeToString(xpath.select("/portfolio/audits/Audit/About[@id='" + vAudits[i].nodeValue + "']/../Recommendations/Recommendation[@nr='" + vRecommendations[j].nodeValue + "']",doc));
+                        var datadb = new XMLSerializer().serializeToString(xpath.select("/portfolio/audits/Audit/About[@id='" + vAudits[i].nodeValue + "']/../Recommendations/Recommendation[@nr='" + vRecommendations[j].nodeValue + "']/.",doc)[0]);
+                        var Recommendation = {
+                            userid: userid,
+                            portfolioid: data.portfolioid,
+                            auditid: vAudits[i].nodeValue,
+                            recid: vRecommendations[j].nodeValue,
+                            data: '<?xml version="1.0" encoding="UTF-8"?>' + datadb
+                        };
+                        //resolve(Resultdel);
+                        database.InsertSearchData(Recommendation).then(function(ResultInsert){
+                            //resolve(ResultInsert);
+                        });
+                    };
+                };
+            });
             resolve(Result);
         });
     });
