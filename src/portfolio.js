@@ -75,11 +75,17 @@ function CreatePortfolio(data, userid) {
                     for (var j=0; j<vRecommendations.length; j++) {
                         //insert on recsearch
                         //var datadb = new XMLSerializer().serializeToString(xpath.select("/portfolio/audits/Audit/About[@id='" + vAudits[i].nodeValue + "']/../Recommendations/Recommendation[@nr='" + vRecommendations[j].nodeValue + "']",doc));
+                        var aboutData = new XMLSerializer().serializeToString(xpath.select("/portfolio/audits/Audit/About[@id='" + vAudits[i].nodeValue + "']/.",doc)[0]);
+                        var backgroundData = new XMLSerializer().serializeToString(xpath.select("/portfolio/audits/Audit/About[@id='" + vAudits[i].nodeValue + "']/../Background",doc)[0]);
+                        var scopeData = new XMLSerializer().serializeToString(xpath.select("/portfolio/audits/Audit/About[@id='" + vAudits[i].nodeValue + "']/../Scope",doc)[0]);
                         var datadb = new XMLSerializer().serializeToString(xpath.select("/portfolio/audits/Audit/About[@id='" + vAudits[i].nodeValue + "']/../Recommendations/Recommendation[@nr='" + vRecommendations[j].nodeValue + "']/.",doc)[0]);
                         var Recommendation = {
                             userid: userid,
                             portfolioid: data.portfolioid,
                             auditid: vAudits[i].nodeValue,
+                            about: '<?xml version="1.0" encoding="UTF-8"?>' + aboutData,
+                            background: '<?xml version="1.0" encoding="UTF-8"?>' + backgroundData,
+                            scope: '<?xml version="1.0" encoding="UTF-8"?>' + scopeData,
                             recid: vRecommendations[j].nodeValue,
                             data: '<?xml version="1.0" encoding="UTF-8"?>' + datadb
                         };
