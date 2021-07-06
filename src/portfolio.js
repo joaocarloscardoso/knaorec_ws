@@ -53,12 +53,14 @@ function CreatePortfolio(data, userid) {
     //else acts as an insert
     var dbparams = {userid: userid,
         portfolioid: data.portfolioid
-    }
+    };
+    var doc1 = new Dom().parseFromString(data.data);
+    var DescrData = new XMLSerializer().serializeToString(xpath.select("/portfolio/name",doc1)[0]);
     var Portfolio = {
         userid: userid,
         datepub: (new Date()).toJSON(),
         portfolioid: data.portfolioid,
-        description: data.description,
+        description: '<?xml version="1.0" encoding="UTF-8"?>' + DescrData, //data.description,
         coverage: data.coverage,
         org: data.org,
         publish: data.publish,
