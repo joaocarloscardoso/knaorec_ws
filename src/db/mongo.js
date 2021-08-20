@@ -68,7 +68,12 @@ function DeleteSearchData(myquery){
             dbo.collection(env.mongoDB.colsearch).deleteMany(myquery, function(err, obj) {
                 if (err) throw err;
                 //console.log(obj.result.n + " search document(s) deleted");
-                resolve(obj.result.n + " search document(s) deleted");
+                var vNumber = 0;
+                if (obj.result != undefined) {
+                    vNumber=obj.result.n;
+                }
+
+                resolve(vNumber + " search document(s) deleted");
                 db.close();
             });
         });
@@ -83,9 +88,9 @@ function InsertSearchData(data){
             if (err) throw err;
             var dbo = db.db(env.mongoDB.dbportfolio);
             //var myquery = { answer: "no" };
-            dbo.collection(env.mongoDB.colsearch).insertOne(data, function(err, res) {
+            dbo.collection(env.mongoDB.colsearch).insertMany(data, function(err, res) {
                 if (err) throw err;
-                //console.log("Search Document inserted");
+                console.log("Search Document inserted");
                 resolve(res.insertedId);
                 db.close();
             });

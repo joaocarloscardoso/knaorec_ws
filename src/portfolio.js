@@ -72,6 +72,7 @@ function CreatePortfolio(data, userid) {
             database.DeleteSearchData(dbparams).then(function(Resultdel){
                 var doc = new Dom().parseFromString(data.data);
                 var vAudits = xpath.select("/portfolio/audits/Audit/About/@id",doc);
+                var searchDocs=[];
                 for (var i=0; i<vAudits.length; i++) {
                     var vRecommendations = xpath.select("/portfolio/audits/Audit/About[@id='" + vAudits[i].nodeValue + "']/../Recommendations/Recommendation/@nr",doc);
                     for (var j=0; j<vRecommendations.length; j++) {
@@ -92,11 +93,12 @@ function CreatePortfolio(data, userid) {
                             data: '<?xml version="1.0" encoding="UTF-8"?>' + datadb
                         };
                         //resolve(Resultdel);
-                        database.InsertSearchData(Recommendation).then(function(ResultInsert){
-                            //resolve(ResultInsert);
-                        });
+                        searchDocs.push(Recommendation);
                     };
                 };
+                database.InsertSearchData(searchDocs).then(function(ResultInsert){
+                    resolve(ResultInsert);
+                });
             });
             resolve(Result);
         });
